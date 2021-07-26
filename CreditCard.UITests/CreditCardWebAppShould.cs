@@ -3,6 +3,7 @@ using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using System.Threading;
+using System.Collections.ObjectModel;
 
 namespace CreditCard.UITests
 {
@@ -83,9 +84,8 @@ namespace CreditCard.UITests
             using (IWebDriver driver = new ChromeDriver())
             {
                 driver.Navigate().GoToUrl("http://localhost:44108/");
-                IWebElement firstTableCell = driver.FindElement(By.TagName("td"));
-                string firstProduct = firstTableCell.Text;
-                Assert.Equal("Easy Credit Card", firstProduct);
+                ReadOnlyCollection<IWebElement> tableCells = driver.FindElements(By.TagName("td"));
+                Assert.Equal("Easy Credit Card", tableCells[0].Text);
 
                 //TODO: check rest of product table
             }
