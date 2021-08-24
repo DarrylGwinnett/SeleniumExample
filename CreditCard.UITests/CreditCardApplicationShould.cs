@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using SeleniumExtras.WaitHelpers;
 using Xunit.Abstractions;
+using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
 namespace CreditCard.UITests
 {
@@ -17,6 +18,9 @@ namespace CreditCard.UITests
     {
 
         private readonly ITestOutputHelper output;
+
+        public string ApplyURL = "http://localhost:44108/Apply";
+
         [Fact]
         [Trait("Category", "Application")]
         public void BeInitiatedFromHomePage_NewLowRate()
@@ -85,7 +89,7 @@ namespace CreditCard.UITests
                 //caroselNext.Click();
                 //Thread.Sleep(1000);
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(35));
-                IWebElement applyLink = wait.Until(ExpectedConditions.ElementToBeClickable(By.ClassName("customer-service-apply-now")));
+                IWebElement applyLink = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("customer-service-apply-now")));
                 applyLink.Click();
                 Assert.Equal("Credit Card Application - Credit Cards", driver.Title);
                 Assert.Equal("http://localhost:44108/Apply", driver.Url);
@@ -130,6 +134,28 @@ namespace CreditCard.UITests
                 randomGreetingApplyLink.Click();
                 Assert.Equal("Credit Card Application - Credit Cards", driver.Title);
                 Assert.Equal("http://localhost:44108/Apply", driver.Url);
+            }
+        }
+
+        [Fact]
+        public void BeSubmittedWhenValid()
+        {
+            using (IWebDriver driver = new ChromeDriver())
+            {
+                driver.Navigate().GoToUrl(ApplyURL);
+                driver.FindElement(By.Id("FirstName")).SendKeys("Sarah");
+                driver.FindElement(By.Id("LastName")).SendKeys("Smith");
+                driver.FindElement(By.Id("FrequentFlyerNumber")).SendKeys("34565");
+                driver.FindElement(By.Id("Age")).SendKeys("18");
+                driver.FindElement(By.Id("GrossAnnualIncome")).SendKeys("50000");
+
+                driver.FindElement(By.Id("Single")).Click();
+                IWebElement businessSourceSelect = driver.FindElement(By.Id("BusinessSource"));
+                SelectElement businessSource = new SelectElement(businessSourceSelect);
+                businessSource.SelectByText("Word of Mouth");
+                driver.FindElement(By.Id("TermsAccepted")).Click();
+     
+                driver.FindElement(By.Id("SubmitApplication")).Click();
             }
         }
     }
